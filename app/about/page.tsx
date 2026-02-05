@@ -3,7 +3,6 @@ import Hero from "@/components/sections/Hero";
 import Container from "@/components/ui/Container";
 import SectionHeading from "@/components/ui/SectionHeading";
 import ScrollReveal from "@/components/animations/ScrollReveal";
-import CountUp from "@/components/animations/CountUp";
 import CTABanner from "@/components/sections/CTABanner";
 import {
   HeartIcon,
@@ -151,71 +150,6 @@ export default function AboutPage() {
                     tools and methodologies to accurately assess your home&apos;s
                     energy performance and identify the most impactful
                     improvements.
-                  </p>
-                </div>
-              </div>
-            </ScrollReveal>
-          </div>
-        </Container>
-      </section>
-
-      {/* Community */}
-      <section className="bg-cream py-24">
-        <Container>
-          <SectionHeading
-            title="Community Impact"
-            subtitle="We believe in giving back to the communities we serve."
-          />
-
-          <div className="mt-16 grid gap-12 lg:grid-cols-2 items-center">
-            <ScrollReveal direction="left">
-              <div className="space-y-6 text-lg leading-relaxed text-gray-600">
-                <p>
-                  Beyond our day-to-day work, Horizon Energy South is deeply
-                  committed to community service. Our team regularly participates
-                  in MLK Day Service Projects and volunteer initiatives focused on
-                  home repair for those in need.
-                </p>
-                <p>
-                  We&apos;ve been proud to contribute to over 600 home repairs
-                  through various community programs, helping ensure that every
-                  Georgian has access to a safe, comfortable home.
-                </p>
-              </div>
-            </ScrollReveal>
-
-            <ScrollReveal direction="right">
-              <div className="grid grid-cols-2 gap-6 text-center">
-                <div className="rounded-2xl bg-white p-6 shadow-md">
-                  <div className="text-4xl font-bold text-orange">
-                    <CountUp target={600} suffix="+" />
-                  </div>
-                  <p className="mt-2 text-sm font-medium text-gray-600">
-                    Homes Repaired
-                  </p>
-                </div>
-                <div className="rounded-2xl bg-white p-6 shadow-md">
-                  <div className="text-4xl font-bold text-amber">
-                    <CountUp target={8} />
-                  </div>
-                  <p className="mt-2 text-sm font-medium text-gray-600">
-                    Counties Served
-                  </p>
-                </div>
-                <div className="rounded-2xl bg-white p-6 shadow-md">
-                  <div className="text-4xl font-bold text-yellow">
-                    <CountUp target={50} suffix="+" />
-                  </div>
-                  <p className="mt-2 text-sm font-medium text-gray-600">
-                    Volunteers Engaged
-                  </p>
-                </div>
-                <div className="rounded-2xl bg-white p-6 shadow-md">
-                  <div className="text-4xl font-bold text-orange">
-                    <CountUp target={100} suffix="%" />
-                  </div>
-                  <p className="mt-2 text-sm font-medium text-gray-600">
-                    Free to Homeowners
                   </p>
                 </div>
               </div>

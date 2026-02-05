@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { Bars3Icon, XMarkIcon, PhoneIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, XMarkIcon, ClipboardDocumentCheckIcon } from "@heroicons/react/24/outline";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -77,11 +77,11 @@ export default function Navbar() {
               </Link>
             ))}
             <Link
-              href="tel:+14044466668"
+              href="/contact"
               className="inline-flex items-center gap-2 rounded-lg bg-orange px-4 py-2 text-sm font-semibold text-white transition-all duration-300 hover:bg-amber"
             >
-              <PhoneIcon className="h-4 w-4" />
-              (404) 446-6668
+              <ClipboardDocumentCheckIcon className="h-4 w-4" />
+              Check Eligibility
             </Link>
           </div>
 
@@ -124,11 +124,11 @@ export default function Navbar() {
                 </Link>
               ))}
               <Link
-                href="tel:+14044466668"
+                href="/contact"
                 className="inline-flex items-center gap-2 rounded-lg bg-orange px-4 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-amber w-fit"
               >
-                <PhoneIcon className="h-4 w-4" />
-                (404) 446-6668
+                <ClipboardDocumentCheckIcon className="h-4 w-4" />
+                Check Eligibility
               </Link>
             </div>
           </motion.div>
