@@ -48,7 +48,9 @@ export default function Navbar() {
               alt="Horizon Energy South"
               width={44}
               height={44}
-              className="h-11 w-11 rounded-full object-cover"
+              className={`h-11 w-11 rounded-full object-cover border-2 shadow-sm ${
+                isScrolled || isMobileOpen ? "border-gray-200" : "border-white/80"
+              }`}
             />
             <span
               className={`text-lg font-bold leading-tight transition-colors duration-300 hidden sm:block ${

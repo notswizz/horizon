@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Container from "@/components/ui/Container";
 import ScrollReveal from "@/components/animations/ScrollReveal";
 import Button from "@/components/ui/Button";
@@ -8,17 +9,14 @@ export default function AboutPreview() {
       <Container>
         <div className="grid gap-12 lg:grid-cols-2 items-center">
           <ScrollReveal direction="left">
-            <div className="aspect-[4/3] overflow-hidden rounded-3xl bg-gradient-to-br from-orange/20 via-amber/20 to-cream">
-              <div className="flex h-full items-center justify-center">
-                <div className="text-center p-8">
-                  <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl gradient-sunset">
-                    <span className="text-3xl font-bold text-white">H</span>
-                  </div>
-                  <p className="text-sm font-medium text-gray-600">
-                    Serving Georgia since day one
-                  </p>
-                </div>
-              </div>
+            <div className="aspect-[4/3] overflow-hidden rounded-3xl">
+              <Image
+                src="/images/hor.png"
+                alt="Horizon Energy South — Serving Georgia since day one"
+                width={640}
+                height={480}
+                className="w-full h-full object-cover rounded-3xl"
+              />
             </div>
           </ScrollReveal>
 
