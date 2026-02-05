@@ -2,7 +2,13 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+**Chatbot:** The site includes a floating chat widget (bottom-right) powered by OpenAI. Add your API key to `.env.local`:
+
+```
+OPENAI_API_KEY=sk-your-key-here
+```
+
+Then run the development server:
 
 ```bash
 npm run dev
