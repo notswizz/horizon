@@ -30,7 +30,7 @@ export default function Hero({
     <section
       ref={ref}
       className={`relative overflow-hidden ${
-        height === "full" ? "min-h-screen" : "min-h-[60vh]"
+        height === "full" ? "min-h-screen" : "min-h-[42vh]"
       } flex items-center`}
     >
       {/* Animated gradient background */}
@@ -51,7 +51,7 @@ export default function Hero({
       )}
 
       {/* Content */}
-      <Container className="relative z-10 py-32">
+      <Container className={`relative z-10 ${height === "full" ? "py-32" : "py-16"}`}>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
