@@ -2,25 +2,85 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #1a1a1a;
+  --orange: #E8682A;
+  --amber: #F0A830;
+  --yellow: #FBC740;
+  --cream: #FCE8A0;
+  --charcoal: #1A1A1A;
+  --gray-600: #4B5563;
+  --gray-100: #F3F4F6;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-orange: #E8682A;
+  --color-amber: #F0A830;
+  --color-yellow: #FBC740;
+  --color-cream: #FCE8A0;
+  --color-charcoal: #1A1A1A;
+  --color-gray-600: #4B5563;
+  --color-gray-100: #F3F4F6;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans, Arial, Helvetica, sans-serif);
+}
+
+/* Gradient utilities */
+.gradient-sunset {
+  background: linear-gradient(135deg, #E8682A, #F0A830, #FBC740, #FCE8A0);
+}
+
+.gradient-sunset-overlay {
+  background: linear-gradient(135deg, rgba(232, 104, 42, 0.6), rgba(240, 168, 48, 0.5), rgba(251, 199, 64, 0.4), rgba(252, 232, 160, 0.3));
+}
+
+/* Animated gradient for CTA */
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.gradient-animated {
+  background: linear-gradient(
+    270deg,
+    #1A1A1A,
+    #2D1810,
+    #4A1E0A,
+    #E8682A,
+    #F0A830,
+    #FBC740,
+    #F0A830,
+    #E8682A,
+    #4A1E0A,
+    #2D1810,
+    #1A1A1A
+  );
+  background-size: 400% 400%;
+  animation: gradient-shift 12s ease infinite;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #E8682A, #F0A830, #FBC740);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Selection color */
+::selection {
+  background-color: rgba(240, 168, 48, 0.3);
+  color: #1A1A1A;
 }
