@@ -103,7 +103,8 @@ export default function Chatbot() {
         return;
       }
       setMessages((prev) => {
-        const next = [...prev, { role: "assistant", content: data.message }];
+        const assistantMessage: Message = { role: "assistant", content: data.message };
+        const next = [...prev, assistantMessage];
         const assistantIndex = next.length - 1;
         setTimeout(() => {
           setTypingIndex(assistantIndex);
