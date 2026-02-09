@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import Container from "@/components/ui/Container";
 import Button from "@/components/ui/Button";
+import { useEligibilityModal } from "@/components/providers/EligibilityModalProvider";
 import { PhoneIcon } from "@heroicons/react/24/solid";
 
 interface CTABannerProps {
@@ -18,6 +19,8 @@ export default function CTABanner({
   showPhone = true,
   showEligibility = true,
 }: CTABannerProps) {
+  const { openModal } = useEligibilityModal();
+
   return (
     <section className="relative overflow-hidden gradient-animated py-24">
       {/* Subtle grid pattern overlay */}
@@ -56,7 +59,7 @@ export default function CTABanner({
           className="mt-10 flex flex-wrap items-center justify-center gap-4"
         >
           {showEligibility && (
-            <Button href="/contact" variant="primary" size="lg">
+            <Button onClick={openModal} variant="primary" size="lg">
               Check Your Eligibility
             </Button>
           )}

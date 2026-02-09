@@ -1,9 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import Button from "@/components/ui/Button";
+import {
+  UserIcon,
+  HomeIcon,
+  BoltIcon,
+  CheckIcon,
+  ArrowRightIcon,
+  ArrowLeftIcon,
+} from "@heroicons/react/24/outline";
 
 interface FormData {
   name: string;
@@ -25,34 +33,61 @@ const initialFormData: FormData = {
   concerns: "",
 };
 
-export default function ContactForm() {
+const steps = [
+  { label: "Your Home", icon: HomeIcon },
+  { label: "Energy", icon: BoltIcon },
+  { label: "Contact", icon: UserIcon },
+];
+
+interface ContactFormProps {
+  onSuccess?: () => void;
+}
+
+export default function ContactForm({ onSuccess }: ContactFormProps) {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [errors, setErrors] = useState<Partial<FormData>>({});
+  const [step, setStep] = useState(0);
+  const [direction, setDirection] = useState(1);
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const validate = (): boolean => {
+  const validateStep = (s: number): boolean => {
     const newErrors: Partial<FormData> = {};
 
-    if (!formData.name.trim()) newErrors.name = "Name is required";
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email";
+    if (s === 0) {
+      if (!formData.address.trim()) newErrors.address = "Address is required";
+      if (!formData.isHomeowner)
+        newErrors.isHomeowner = "Please select an option";
     }
-    if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
-    if (!formData.address.trim()) newErrors.address = "Address is required";
-    if (!formData.isHomeowner)
-      newErrors.isHomeowner = "Please select an option";
+
+    if (s === 2) {
+      if (!formData.name.trim()) newErrors.name = "Name is required";
+      if (!formData.email.trim()) {
+        newErrors.email = "Email is required";
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+        newErrors.email = "Please enter a valid email";
+      }
+      if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validate()) return;
+  const next = () => {
+    if (!validateStep(step)) return;
+    setDirection(1);
+    setStep((s) => s + 1);
+  };
+
+  const back = () => {
+    setDirection(-1);
+    setStep((s) => s - 1);
+  };
+
+  const handleSubmit = async () => {
+    if (!validateStep(step)) return;
 
     setSubmitting(true);
     setSubmitError(null);
@@ -63,9 +98,12 @@ export default function ContactForm() {
         createdAt: serverTimestamp(),
       });
       setSubmitted(true);
+      if (onSuccess) {
+        setTimeout(onSuccess, 3000);
+      }
     } catch {
       setSubmitError(
-        "Something went wrong submitting your information. Please try again or call us at (404) 446-6668."
+        "Something went wrong. Please try again or call us at (404) 446-6668."
       );
     } finally {
       setSubmitting(false);
@@ -84,189 +122,306 @@ export default function ContactForm() {
     }
   };
 
+  const inputStyles =
+    "w-full rounded-xl border-2 border-gray-100 bg-gray-50/50 px-4 py-3.5 text-charcoal placeholder-gray-400 transition-all duration-200 focus:border-orange focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange/20";
+  const labelStyles = "block text-sm font-semibold text-charcoal mb-2";
+  const errorStyles = "text-xs text-red-500 mt-1.5 font-medium";
+
+  const slideVariants = {
+    enter: (d: number) => ({ x: d > 0 ? 80 : -80, opacity: 0 }),
+    center: { x: 0, opacity: 1 },
+    exit: (d: number) => ({ x: d > 0 ? -80 : 80, opacity: 0 }),
+  };
+
   if (submitted) {
     return (
-      <div className="rounded-2xl bg-white p-8 text-center shadow-md">
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-cream">
-          <svg
-            className="h-8 w-8 text-orange"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2}
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M4.5 12.75l6 6 9-13.5"
-            />
-          </svg>
-        </div>
-        <h3 className="text-2xl font-bold text-charcoal">Thank You!</h3>
-        <p className="mt-2 text-gray-600">
-          We&apos;ve received your information and will be in touch within 1
-          business day to discuss your eligibility.
-        </p>
+      <div className="p-10 text-center">
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ type: "spring", damping: 15, stiffness: 300, delay: 0.1 }}
+          className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-orange to-amber"
+        >
+          <CheckIcon className="h-10 w-10 text-white" strokeWidth={3} />
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <h3 className="text-2xl font-bold text-charcoal">You&apos;re All Set!</h3>
+          <p className="mt-3 text-gray-500 leading-relaxed">
+            We&apos;ll be in touch within 1 business day to discuss your eligibility.
+          </p>
+        </motion.div>
       </div>
     );
   }
 
-  const inputStyles =
-    "w-full rounded-lg border border-gray-200 px-4 py-3 text-charcoal placeholder-gray-400 transition-colors focus:border-orange focus:outline-none focus:ring-1 focus:ring-orange";
-  const labelStyles = "block text-sm font-medium text-charcoal mb-1.5";
-  const errorStyles = "text-sm text-red-500 mt-1";
-
   return (
-    <form onSubmit={handleSubmit} className="rounded-2xl bg-white p-8 shadow-md">
-      <h3 className="text-2xl font-bold text-charcoal mb-2">
-        Check Your Eligibility
-      </h3>
-      <p className="text-gray-600 mb-8">
-        See if your home qualifies for FREE energy upgrades through Georgia&apos;s
-        rebate program.
-      </p>
+    <div className="p-8">
+      {/* Header */}
+      <div className="mb-8">
+        <h3 className="text-2xl font-bold text-charcoal">
+          Check Your Eligibility
+        </h3>
+        <p className="mt-1 text-sm text-gray-500">
+          Step {step + 1} of {steps.length}
+        </p>
+      </div>
 
-      <div className="space-y-5">
-        {/* Name */}
-        <div>
-          <label htmlFor="name" className={labelStyles}>
-            Full Name *
-          </label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            placeholder="John Smith"
-            className={inputStyles}
-          />
-          {errors.name && <p className={errorStyles}>{errors.name}</p>}
-        </div>
+      {/* Progress Steps */}
+      <div className="mb-8 flex items-center gap-2">
+        {steps.map((s, i) => {
+          const Icon = s.icon;
+          const isActive = i === step;
+          const isComplete = i < step;
+          return (
+            <div key={s.label} className="flex flex-1 items-center gap-2">
+              <div
+                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-all duration-300 ${
+                  isComplete
+                    ? "bg-orange text-white"
+                    : isActive
+                    ? "bg-orange/10 text-orange ring-2 ring-orange"
+                    : "bg-gray-100 text-gray-400"
+                }`}
+              >
+                {isComplete ? (
+                  <CheckIcon className="h-4 w-4" strokeWidth={3} />
+                ) : (
+                  <Icon className="h-4 w-4" />
+                )}
+              </div>
+              {i < steps.length - 1 && (
+                <div
+                  className={`h-0.5 flex-1 rounded-full transition-colors duration-300 ${
+                    isComplete ? "bg-orange" : "bg-gray-100"
+                  }`}
+                />
+              )}
+            </div>
+          );
+        })}
+      </div>
 
-        {/* Email */}
-        <div>
-          <label htmlFor="email" className={labelStyles}>
-            Email Address *
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="john@example.com"
-            className={inputStyles}
-          />
-          {errors.email && <p className={errorStyles}>{errors.email}</p>}
-        </div>
-
-        {/* Phone */}
-        <div>
-          <label htmlFor="phone" className={labelStyles}>
-            Phone Number *
-          </label>
-          <input
-            type="tel"
-            id="phone"
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-            placeholder="(404) 555-1234"
-            className={inputStyles}
-          />
-          {errors.phone && <p className={errorStyles}>{errors.phone}</p>}
-        </div>
-
-        {/* Address */}
-        <div>
-          <label htmlFor="address" className={labelStyles}>
-            Home Address *
-          </label>
-          <input
-            type="text"
-            id="address"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            placeholder="123 Main St, Macon, GA 31201"
-            className={inputStyles}
-          />
-          {errors.address && <p className={errorStyles}>{errors.address}</p>}
-        </div>
-
-        {/* Home Age */}
-        <div>
-          <label htmlFor="homeAge" className={labelStyles}>
-            Approximate Home Age
-          </label>
-          <select
-            id="homeAge"
-            name="homeAge"
-            value={formData.homeAge}
-            onChange={handleChange}
-            className={inputStyles}
+      {/* Step Content */}
+      <div className="relative overflow-hidden">
+        <AnimatePresence mode="wait" custom={direction}>
+          <motion.div
+            key={step}
+            custom={direction}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.25, ease: "easeInOut" }}
           >
-            <option value="">Select...</option>
-            <option value="0-10">0–10 years</option>
-            <option value="10-20">10–20 years</option>
-            <option value="20-30">20–30 years</option>
-            <option value="30+">30+ years</option>
-          </select>
-        </div>
+            {step === 0 && (
+              <div className="space-y-5">
+                <div>
+                  <label htmlFor="address" className={labelStyles}>
+                    Home Address
+                  </label>
+                  <input
+                    type="text"
+                    id="address"
+                    name="address"
+                    value={formData.address}
+                    onChange={handleChange}
+                    placeholder="123 Main St, Macon, GA 31201"
+                    className={inputStyles}
+                    autoFocus
+                  />
+                  {errors.address && (
+                    <p className={errorStyles}>{errors.address}</p>
+                  )}
+                </div>
+                <div>
+                  <label htmlFor="homeAge" className={labelStyles}>
+                    Approximate Home Age
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      { value: "0-10", label: "0–10 yrs" },
+                      { value: "10-20", label: "10–20 yrs" },
+                      { value: "20-30", label: "20–30 yrs" },
+                      { value: "30+", label: "30+ yrs" },
+                    ].map((opt) => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() =>
+                          setFormData((prev) => ({ ...prev, homeAge: opt.value }))
+                        }
+                        className={`rounded-xl border-2 px-4 py-3 text-sm font-medium transition-all duration-200 ${
+                          formData.homeAge === opt.value
+                            ? "border-orange bg-orange/5 text-orange"
+                            : "border-gray-100 bg-gray-50/50 text-gray-600 hover:border-gray-200"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className={labelStyles}>
+                    Are you the homeowner?
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      { value: "yes", label: "Yes" },
+                      { value: "no", label: "No" },
+                    ].map((opt) => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            isHomeowner: opt.value,
+                          }))
+                        }
+                        className={`rounded-xl border-2 px-4 py-3 text-sm font-medium transition-all duration-200 ${
+                          formData.isHomeowner === opt.value
+                            ? "border-orange bg-orange/5 text-orange"
+                            : "border-gray-100 bg-gray-50/50 text-gray-600 hover:border-gray-200"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  {errors.isHomeowner && (
+                    <p className={errorStyles}>{errors.isHomeowner}</p>
+                  )}
+                </div>
+              </div>
+            )}
 
-        {/* Homeowner */}
-        <div>
-          <label htmlFor="isHomeowner" className={labelStyles}>
-            Are you the homeowner? *
-          </label>
-          <select
-            id="isHomeowner"
-            name="isHomeowner"
-            value={formData.isHomeowner}
-            onChange={handleChange}
-            className={inputStyles}
+            {step === 1 && (
+              <div className="space-y-5">
+                <div>
+                  <label htmlFor="concerns" className={labelStyles}>
+                    Any energy concerns? <span className="font-normal text-gray-400">(optional)</span>
+                  </label>
+                  <textarea
+                    id="concerns"
+                    name="concerns"
+                    value={formData.concerns}
+                    onChange={handleChange}
+                    rows={5}
+                    placeholder="High energy bills, drafty rooms, uncomfortable temperatures..."
+                    className={inputStyles}
+                    autoFocus
+                  />
+                </div>
+              </div>
+            )}
+
+            {step === 2 && (
+              <div className="space-y-5">
+                <div>
+                  <label htmlFor="name" className={labelStyles}>
+                    Full Name
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="John Smith"
+                    className={inputStyles}
+                    autoFocus
+                  />
+                  {errors.name && <p className={errorStyles}>{errors.name}</p>}
+                </div>
+                <div>
+                  <label htmlFor="email" className={labelStyles}>
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="john@example.com"
+                    className={inputStyles}
+                  />
+                  {errors.email && (
+                    <p className={errorStyles}>{errors.email}</p>
+                  )}
+                </div>
+                <div>
+                  <label htmlFor="phone" className={labelStyles}>
+                    Phone Number
+                  </label>
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder="(404) 555-1234"
+                    className={inputStyles}
+                  />
+                  {errors.phone && (
+                    <p className={errorStyles}>{errors.phone}</p>
+                  )}
+                </div>
+
+                {submitError && (
+                  <p className="text-sm text-red-500 rounded-xl bg-red-50 p-3 font-medium">
+                    {submitError}
+                  </p>
+                )}
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {/* Navigation */}
+      <div className="mt-8 flex items-center gap-3">
+        {step > 0 && (
+          <button
+            type="button"
+            onClick={back}
+            className="flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold text-gray-500 transition-colors hover:bg-gray-100 hover:text-charcoal"
           >
-            <option value="">Select...</option>
-            <option value="yes">Yes</option>
-            <option value="no">No</option>
-          </select>
-          {errors.isHomeowner && (
-            <p className={errorStyles}>{errors.isHomeowner}</p>
-          )}
-        </div>
-
-        {/* Concerns */}
-        <div>
-          <label htmlFor="concerns" className={labelStyles}>
-            Current Energy Concerns
-          </label>
-          <textarea
-            id="concerns"
-            name="concerns"
-            value={formData.concerns}
-            onChange={handleChange}
-            rows={4}
-            placeholder="Tell us about any issues — high energy bills, drafty rooms, uncomfortable temperatures..."
-            className={inputStyles}
-          />
-        </div>
-
-        {submitError && (
-          <p className="text-sm text-red-500 rounded-lg bg-red-50 p-3">
-            {submitError}
-          </p>
+            <ArrowLeftIcon className="h-4 w-4" />
+            Back
+          </button>
         )}
 
-        <Button
-          type="submit"
-          variant="primary"
-          size="lg"
-          className={`w-full ${submitting ? "opacity-70 pointer-events-none" : ""}`}
-        >
-          {submitting ? "Submitting..." : "Submit for Eligibility Review"}
-        </Button>
+        <div className="flex-1" />
+
+        {step < steps.length - 1 ? (
+          <button
+            type="button"
+            onClick={next}
+            className="flex items-center gap-2 rounded-xl bg-orange px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-orange/25 transition-all duration-200 hover:bg-amber hover:shadow-xl hover:shadow-amber/25"
+          >
+            Continue
+            <ArrowRightIcon className="h-4 w-4" />
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={submitting}
+            className={`flex items-center gap-2 rounded-xl bg-orange px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-orange/25 transition-all duration-200 hover:bg-amber hover:shadow-xl hover:shadow-amber/25 ${
+              submitting ? "opacity-70 pointer-events-none" : ""
+            }`}
+          >
+            {submitting ? "Submitting..." : "Submit"}
+            {!submitting && <CheckIcon className="h-4 w-4" strokeWidth={3} />}
+          </button>
+        )}
       </div>
-    </form>
+    </div>
   );
 }

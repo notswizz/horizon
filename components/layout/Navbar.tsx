@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { Bars3Icon, XMarkIcon, ClipboardDocumentCheckIcon } from "@heroicons/react/24/outline";
+import { useEligibilityModal } from "@/components/providers/EligibilityModalProvider";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -17,6 +18,7 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const pathname = usePathname();
+  const { openModal } = useEligibilityModal();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -77,13 +79,13 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
-            <Link
-              href="/contact"
+            <button
+              onClick={openModal}
               className="inline-flex items-center gap-2 rounded-lg bg-orange px-4 py-2 text-sm font-semibold text-white transition-all duration-300 hover:bg-amber"
             >
               <ClipboardDocumentCheckIcon className="h-4 w-4" />
               Check Eligibility
-            </Link>
+            </button>
           </div>
 
           {/* Mobile Hamburger */}
@@ -124,13 +126,13 @@ export default function Navbar() {
                   {link.label}
                 </Link>
               ))}
-              <Link
-                href="/contact"
+              <button
+                onClick={() => { openModal(); setIsMobileOpen(false); }}
                 className="inline-flex items-center gap-2 rounded-lg bg-orange px-4 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-amber w-fit"
               >
                 <ClipboardDocumentCheckIcon className="h-4 w-4" />
                 Check Eligibility
-              </Link>
+              </button>
             </div>
           </motion.div>
         )}

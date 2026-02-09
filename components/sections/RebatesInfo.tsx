@@ -1,7 +1,7 @@
 import Container from "@/components/ui/Container";
 import SectionHeading from "@/components/ui/SectionHeading";
 import ScrollReveal from "@/components/animations/ScrollReveal";
-import Button from "@/components/ui/Button";
+import EligibilityButton from "@/components/ui/EligibilityButton";
 import {
   CheckCircleIcon,
 } from "@heroicons/react/24/solid";
@@ -54,7 +54,7 @@ export default function RebatesInfo() {
                 ))}
               </ul>
               <div className="mt-8">
-                <Button href="/contact">Check Your Eligibility</Button>
+                <EligibilityButton>Check Your Eligibility</EligibilityButton>
               </div>
             </div>
           </ScrollReveal>
