@@ -129,6 +129,8 @@ export default function ContactPage() {
       <CTABanner
         title="Prefer to Talk? Call Us"
         subtitle="Our team is ready to answer your questions and help you get started. All services are FREE through the rebate program."
+        showPhone={true}
+        showEligibility={false}
       />
     </>
   );

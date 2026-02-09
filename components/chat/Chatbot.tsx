@@ -12,7 +12,7 @@ import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 type Message = { role: "user" | "assistant"; content: string };
 
 const WELCOME =
-  "Hi! I’m here to help with questions about Horizon Energy South and free home energy upgrades in Georgia. What would you like to know?";
+  "Hi! I'm here to help with questions about Horizon Energy South and free home energy upgrades in Georgia. What would you like to know?";
 
 const TYPEWRITER_MS = 20;
 
@@ -29,6 +29,7 @@ export default function Chatbot() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = useCallback(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -44,6 +45,40 @@ export default function Chatbot() {
       scrollToBottom();
     }
   }, [open, scrollToBottom]);
+
+  // Focus trap: keep Tab cycling inside the chat modal
+  useEffect(() => {
+    if (!open) return;
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        setOpen(false);
+        return;
+      }
+      if (e.key !== "Tab") return;
+
+      const focusable = dialog!.querySelectorAll<HTMLElement>(
+        'button, input, [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [open]);
 
   // Typewriter: when a new assistant message is added, animate its display
   useEffect(() => {
@@ -118,7 +153,7 @@ export default function Chatbot() {
         {
           role: "assistant",
           content:
-            "I couldn’t reach the server. Please try again or call (404) 446-6668.",
+            "I couldn't reach the server. Please try again or call (404) 446-6668.",
         },
       ]);
       setError("Network error");
@@ -129,11 +164,11 @@ export default function Chatbot() {
 
   return (
     <>
-      {/* Floating button */}
+      {/* Floating button — offset on mobile to avoid overlapping form buttons */}
       <motion.button
         type="button"
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-orange to-amber text-white shadow-lg shadow-orange/30 transition hover:shadow-orange/40 focus:outline-none focus:ring-2 focus:ring-orange focus:ring-offset-2 focus:ring-offset-charcoal"
+        className="fixed bottom-20 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-orange to-amber text-white shadow-lg shadow-orange/30 transition hover:shadow-orange/40 focus:outline-none focus:ring-2 focus:ring-orange focus:ring-offset-2 focus:ring-offset-charcoal sm:bottom-6"
         aria-label="Open chat"
         initial={false}
         animate={{ scale: 1 }}
@@ -156,8 +191,10 @@ export default function Chatbot() {
               aria-hidden
             />
             <motion.div
+              ref={dialogRef}
               role="dialog"
               aria-label="Chat with Horizon Energy South"
+              aria-modal="true"
               initial={{ opacity: 0, y: 24, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 24, scale: 0.96 }}
@@ -165,7 +202,7 @@ export default function Chatbot() {
               className="fixed bottom-6 right-6 z-50 flex h-[calc(100vh-6rem)] max-h-[580px] w-[calc(100vw-3rem)] max-w-md flex-col overflow-hidden rounded-2xl border border-white/10 bg-charcoal shadow-2xl shadow-black/50"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Header — futuristic dark glass */}
+              {/* Header */}
               <div className="flex items-center justify-between border-b border-white/10 bg-charcoal/95 px-5 py-4 backdrop-blur-xl">
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-orange to-amber text-white shadow-lg shadow-orange/30">
@@ -196,7 +233,7 @@ export default function Chatbot() {
                 </div>
               </div>
 
-              {/* Messages — dark panel with subtle grid feel */}
+              {/* Messages */}
               <div ref={scrollRef} className="flex-1 overflow-y-auto bg-[#0d0d0d] p-4">
                 <div className="space-y-4">
                   {messages.map((msg, i) => {
@@ -244,7 +281,7 @@ export default function Chatbot() {
                 <div ref={bottomRef} />
               </div>
 
-              {/* Input — sleek dark bar */}
+              {/* Input */}
               <div className="border-t border-white/10 bg-charcoal/95 p-4 backdrop-blur-xl">
                 <form
                   onSubmit={(e) => {

@@ -9,12 +9,14 @@ interface CTABannerProps {
   title?: string;
   subtitle?: string;
   showPhone?: boolean;
+  showEligibility?: boolean;
 }
 
 export default function CTABanner({
   title = "Your Home Energy Upgrade Could Be Free",
   subtitle = "See if you qualify for Georgia's Home Energy Rebates program.",
   showPhone = true,
+  showEligibility = true,
 }: CTABannerProps) {
   return (
     <section className="relative overflow-hidden gradient-animated py-24">
@@ -53,9 +55,11 @@ export default function CTABanner({
           transition={{ duration: 0.6, delay: 0.2 }}
           className="mt-10 flex flex-wrap items-center justify-center gap-4"
         >
-          <Button href="/contact" variant="primary" size="lg">
-            Check Your Eligibility
-          </Button>
+          {showEligibility && (
+            <Button href="/contact" variant="primary" size="lg">
+              Check Your Eligibility
+            </Button>
+          )}
           {showPhone && (
             <Button href="tel:+14044466668" variant="outline" size="lg">
               <PhoneIcon className="mr-2 h-5 w-5" />

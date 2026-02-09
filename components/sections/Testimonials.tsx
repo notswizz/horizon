@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Container from "@/components/ui/Container";
 import SectionHeading from "@/components/ui/SectionHeading";
+import { PauseIcon, PlayIcon } from "@heroicons/react/24/solid";
 
 const testimonials = [
   {
@@ -34,18 +35,20 @@ const testimonials = [
 
 export default function Testimonials() {
   const [current, setCurrent] = useState(0);
+  const [paused, setPaused] = useState(false);
 
   const next = useCallback(() => {
     setCurrent((prev) => (prev + 1) % testimonials.length);
   }, []);
 
   useEffect(() => {
+    if (paused) return;
     const timer = setInterval(next, 5000);
     return () => clearInterval(timer);
-  }, [next]);
+  }, [next, paused]);
 
   return (
-    <section className="bg-cream py-24">
+    <section className="bg-cream py-24" aria-roledescription="carousel" aria-label="Customer testimonials">
       <Container>
         <SectionHeading
           title="What Our Customers Say"
@@ -61,11 +64,15 @@ export default function Testimonials() {
               exit={{ opacity: 0, x: -50 }}
               transition={{ duration: 0.4 }}
               className="mx-auto max-w-3xl text-center"
+              role="group"
+              aria-roledescription="slide"
+              aria-label={`Testimonial ${current + 1} of ${testimonials.length}`}
             >
               <svg
                 className="mx-auto mb-6 h-10 w-10 text-orange/30"
                 fill="currentColor"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
               </svg>
@@ -83,18 +90,30 @@ export default function Testimonials() {
             </motion.div>
           </AnimatePresence>
 
-          {/* Dots */}
-          <div className="mt-8 flex justify-center gap-2">
+          {/* Controls */}
+          <div className="mt-8 flex items-center justify-center gap-3">
+            <button
+              onClick={() => setPaused(!paused)}
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-orange/10 text-orange transition-colors hover:bg-orange/20"
+              aria-label={paused ? "Play testimonials" : "Pause testimonials"}
+            >
+              {paused ? (
+                <PlayIcon className="h-3.5 w-3.5" />
+              ) : (
+                <PauseIcon className="h-3.5 w-3.5" />
+              )}
+            </button>
             {testimonials.map((_, i) => (
               <button
                 key={i}
                 onClick={() => setCurrent(i)}
-                className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${
+                className={`h-2.5 rounded-full transition-all duration-300 ${
                   i === current
                     ? "bg-orange w-8"
-                    : "bg-orange/30 hover:bg-orange/50"
+                    : "bg-orange/30 hover:bg-orange/50 w-2.5"
                 }`}
                 aria-label={`Go to testimonial ${i + 1}`}
+                aria-current={i === current ? "true" : undefined}
               />
             ))}
           </div>

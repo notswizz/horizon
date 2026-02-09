@@ -27,6 +27,16 @@ const sizeStyles = {
   lg: "px-8 py-4 text-lg",
 };
 
+function isExternalOrSpecialHref(href: string): boolean {
+  return (
+    href.startsWith("tel:") ||
+    href.startsWith("mailto:") ||
+    href.startsWith("http://") ||
+    href.startsWith("https://") ||
+    href.startsWith("#")
+  );
+}
+
 export default function Button({
   children,
   variant = "primary",
@@ -41,6 +51,13 @@ export default function Button({
   const styles = `${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${className}`;
 
   if (href) {
+    if (isExternalOrSpecialHref(href)) {
+      return (
+        <a href={href} className={styles}>
+          {children}
+        </a>
+      );
+    }
     return (
       <Link href={href} className={styles}>
         {children}

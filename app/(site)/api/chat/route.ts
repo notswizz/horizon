@@ -30,12 +30,53 @@ Upgrades can be 100% free. Direct people to the Contact page to check eligibilit
 
 If you don't know something or the question is off-topic, say so politely and suggest they call or use the contact form.`;
 
+// Module-scope OpenAI client (created once)
+const apiKey = process.env.OPENAI_API_KEY;
+const openai = apiKey ? new OpenAI({ apiKey }) : null;
+
+// Simple in-memory rate limiter: max 20 requests per IP per minute
+const rateMap = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT = 20;
+const RATE_WINDOW_MS = 60_000;
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const entry = rateMap.get(ip);
+
+  if (!entry || now > entry.resetAt) {
+    rateMap.set(ip, { count: 1, resetAt: now + RATE_WINDOW_MS });
+    return false;
+  }
+
+  entry.count++;
+  return entry.count > RATE_LIMIT;
+}
+
+// Clean up stale entries every 5 minutes
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, val] of rateMap) {
+    if (now > val.resetAt) rateMap.delete(key);
+  }
+}, 300_000);
+
+const MAX_MESSAGES = 30;
+const MAX_MESSAGE_LENGTH = 2000;
+
 export async function POST(req: NextRequest) {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
+  if (!openai) {
     return NextResponse.json(
       { error: "Chat is not configured. Add OPENAI_API_KEY to .env.local." },
       { status: 503 }
+    );
+  }
+
+  // Rate limiting
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  if (isRateLimited(ip)) {
+    return NextResponse.json(
+      { error: "Too many requests. Please wait a moment and try again." },
+      { status: 429 }
     );
   }
 
@@ -54,23 +95,45 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const openai = new OpenAI({ apiKey });
+  // Limit conversation length
+  if (messages.length > MAX_MESSAGES) {
+    return NextResponse.json(
+      { error: "Conversation too long. Please clear the chat and start fresh." },
+      { status: 400 }
+    );
+  }
+
+  // Sanitize: only allow "user" and "assistant" roles, enforce max message length
+  const sanitized = messages
+    .filter(
+      (m) =>
+        typeof m.content === "string" &&
+        (m.role === "user" || m.role === "assistant")
+    )
+    .map((m) => ({
+      role: m.role as "user" | "assistant",
+      content: m.content.slice(0, MAX_MESSAGE_LENGTH),
+    }));
+
+  if (sanitized.length === 0) {
+    return NextResponse.json(
+      { error: "No valid messages provided" },
+      { status: 400 }
+    );
+  }
 
   try {
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
-        ...messages.map((m: { role: string; content: string }) => ({
-          role: m.role as "user" | "assistant" | "system",
-          content: m.content,
-        })),
+        ...sanitized,
       ],
       max_tokens: 512,
     });
 
     const content =
-      completion.choices[0]?.message?.content ?? "I couldn’t generate a response. Please try again.";
+      completion.choices[0]?.message?.content ?? "I couldn't generate a response. Please try again.";
     return NextResponse.json({ message: content });
   } catch (err) {
     console.error("OpenAI API error:", err);

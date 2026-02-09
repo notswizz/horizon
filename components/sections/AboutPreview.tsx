@@ -23,21 +23,30 @@ export default function AboutPreview() {
           <ScrollReveal direction="right">
             <div className="gradient-sunset mb-4 h-1 w-16 rounded-full" />
             <h2 className="text-3xl font-bold text-charcoal sm:text-4xl">
-              Making Homes More Sustainable
+              Founded by Emory &amp; Georgia Tech Alumni
             </h2>
             <p className="mt-6 text-lg leading-relaxed text-gray-600">
-              Horizon Energy South was founded with a simple mission: help Georgia
-              homeowners access free energy upgrades that make their homes more
-              comfortable and efficient. Through the Georgia Home Energy Rebates
-              program, we&apos;ve helped hundreds of families reduce their energy
-              costs.
+              We saw too many Georgia families paying high energy bills while
+              living in under-insulated, drafty homes. So we built a company
+              to fix that — connecting homeowners with free upgrades through
+              the state&apos;s rebate program.
             </p>
-            <p className="mt-4 text-lg leading-relaxed text-gray-600">
-              Our team of BPI and RESNET certified professionals brings years of
-              experience in home energy assessment and improvement.
-            </p>
+            <ul className="mt-6 space-y-3 text-gray-600">
+              <li className="flex items-center gap-3">
+                <div className="h-2 w-2 rounded-full bg-orange shrink-0" />
+                BPI &amp; RESNET certified professionals
+              </li>
+              <li className="flex items-center gap-3">
+                <div className="h-2 w-2 rounded-full bg-orange shrink-0" />
+                Authorized Georgia rebate contractor
+              </li>
+              <li className="flex items-center gap-3">
+                <div className="h-2 w-2 rounded-full bg-orange shrink-0" />
+                Every step managed for you — audit to inspection
+              </li>
+            </ul>
             <div className="mt-8">
-              <Button href="/about">Learn More About Us</Button>
+              <Button href="/about">Our Story &amp; Values</Button>
             </div>
           </ScrollReveal>
         </div>

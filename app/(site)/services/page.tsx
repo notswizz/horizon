@@ -25,6 +25,7 @@ export const metadata: Metadata = {
 
 const services = [
   {
+    id: "energy-audits",
     icon: <MagnifyingGlassIcon className="h-8 w-8" />,
     title: "Home Energy Audits",
     description:
@@ -37,6 +38,7 @@ const services = [
     ],
   },
   {
+    id: "weatherization",
     icon: <ShieldCheckIcon className="h-8 w-8" />,
     title: "Weatherization",
     description:
@@ -49,6 +51,7 @@ const services = [
     ],
   },
   {
+    id: "insulation",
     icon: <HomeIcon className="h-8 w-8" />,
     title: "Insulation",
     description:
@@ -61,6 +64,7 @@ const services = [
     ],
   },
   {
+    id: "rebates",
     icon: <CurrencyDollarIcon className="h-8 w-8" />,
     title: "Georgia Home Energy Rebates",
     description:
@@ -122,9 +126,8 @@ export default function ServicesPage() {
             {services.map((service, i) => (
               <ScrollReveal key={service.title} delay={0.1}>
                 <div
-                  className={`grid gap-8 lg:grid-cols-2 items-center ${
-                    i % 2 === 1 ? "lg:direction-rtl" : ""
-                  }`}
+                  id={service.id}
+                  className="grid gap-8 lg:grid-cols-2 items-center scroll-mt-24"
                 >
                   <div className={i % 2 === 1 ? "lg:order-2" : ""}>
                     <div className="flex items-center gap-4 mb-4">

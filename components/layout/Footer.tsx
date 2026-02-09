@@ -16,10 +16,10 @@ const quickLinks = [
 ];
 
 const serviceLinks = [
-  { href: "/services", label: "Energy Audits" },
-  { href: "/services", label: "Weatherization" },
-  { href: "/services", label: "Insulation" },
-  { href: "/services", label: "Rebate Assistance" },
+  { href: "/services#energy-audits", label: "Energy Audits" },
+  { href: "/services#weatherization", label: "Weatherization" },
+  { href: "/services#insulation", label: "Insulation" },
+  { href: "/services#rebates", label: "Rebate Assistance" },
 ];
 
 export default function Footer() {
@@ -91,22 +91,22 @@ export default function Footer() {
             </h3>
             <ul className="space-y-3">
               <li>
-                <Link
+                <a
                   href="tel:+14044466668"
                   className="flex items-center gap-2 text-sm text-white/60 transition-colors hover:text-white"
                 >
                   <PhoneIcon className="h-4 w-4 text-orange" />
                   (404) 446-6668
-                </Link>
+                </a>
               </li>
               <li>
-                <Link
+                <a
                   href="mailto:info@horizonenergysouth.com"
                   className="flex items-center gap-2 text-sm text-white/60 transition-colors hover:text-white"
                 >
                   <EnvelopeIcon className="h-4 w-4 text-orange" />
                   info@horizonenergysouth.com
-                </Link>
+                </a>
               </li>
               <li>
                 <div className="flex items-start gap-2 text-sm text-white/60">

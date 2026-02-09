@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 import Button from "@/components/ui/Button";
 
 interface FormData {
@@ -27,6 +29,8 @@ export default function ContactForm() {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [errors, setErrors] = useState<Partial<FormData>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const validate = (): boolean => {
     const newErrors: Partial<FormData> = {};
@@ -46,10 +50,25 @@ export default function ContactForm() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (validate()) {
+    if (!validate()) return;
+
+    setSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      await addDoc(collection(db, "leads"), {
+        ...formData,
+        createdAt: serverTimestamp(),
+      });
       setSubmitted(true);
+    } catch {
+      setSubmitError(
+        "Something went wrong submitting your information. Please try again or call us at (404) 446-6668."
+      );
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -233,8 +252,19 @@ export default function ContactForm() {
           />
         </div>
 
-        <Button type="submit" variant="primary" size="lg" className="w-full">
-          Submit for Eligibility Review
+        {submitError && (
+          <p className="text-sm text-red-500 rounded-lg bg-red-50 p-3">
+            {submitError}
+          </p>
+        )}
+
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          className={`w-full ${submitting ? "opacity-70 pointer-events-none" : ""}`}
+        >
+          {submitting ? "Submitting..." : "Submit for Eligibility Review"}
         </Button>
       </div>
     </form>
