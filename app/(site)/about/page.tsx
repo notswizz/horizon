@@ -4,12 +4,11 @@ import Container from "@/components/ui/Container";
 import SectionHeading from "@/components/ui/SectionHeading";
 import ScrollReveal from "@/components/animations/ScrollReveal";
 import CTABanner from "@/components/sections/CTABanner";
+import Image from "next/image";
 import {
   HeartIcon,
   SparklesIcon,
   GlobeAmericasIcon,
-  ShieldCheckIcon,
-  AcademicCapIcon,
 } from "@heroicons/react/24/solid";
 
 export const metadata: Metadata = {
@@ -119,9 +118,13 @@ export default function AboutPage() {
           <div className="mt-16 grid gap-8 md:grid-cols-2">
             <ScrollReveal direction="left">
               <div className="flex items-start gap-6 rounded-2xl bg-gray-100 p-8">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-orange text-white">
-                  <ShieldCheckIcon className="h-8 w-8" />
-                </div>
+                <Image
+                  src="/images/bpi.png"
+                  alt="BPI Certified"
+                  width={80}
+                  height={80}
+                  className="shrink-0"
+                />
                 <div>
                   <h3 className="text-xl font-bold text-charcoal">
                     BPI Certified
@@ -138,9 +141,13 @@ export default function AboutPage() {
 
             <ScrollReveal direction="right">
               <div className="flex items-start gap-6 rounded-2xl bg-gray-100 p-8">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-amber text-white">
-                  <AcademicCapIcon className="h-8 w-8" />
-                </div>
+                <Image
+                  src="/images/resnet.png"
+                  alt="RESNET Certified"
+                  width={80}
+                  height={80}
+                  className="shrink-0"
+                />
                 <div>
                   <h3 className="text-xl font-bold text-charcoal">
                     RESNET Certified

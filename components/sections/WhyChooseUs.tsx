@@ -2,11 +2,8 @@ import Container from "@/components/ui/Container";
 import SectionHeading from "@/components/ui/SectionHeading";
 import ScrollReveal from "@/components/animations/ScrollReveal";
 import CountUp from "@/components/animations/CountUp";
-import {
-  ShieldCheckIcon,
-  AcademicCapIcon,
-  CheckBadgeIcon,
-} from "@heroicons/react/24/solid";
+import Image from "next/image";
+import { CheckBadgeIcon } from "@heroicons/react/24/solid";
 
 const stats = [
   { target: 500, suffix: "+", label: "Homes Improved" },
@@ -16,12 +13,12 @@ const stats = [
 
 const certifications = [
   {
-    icon: <ShieldCheckIcon className="h-8 w-8" />,
+    image: "/images/bpi.png",
     title: "BPI Certified",
     description: "Building Performance Institute certified professionals.",
   },
   {
-    icon: <AcademicCapIcon className="h-8 w-8" />,
+    image: "/images/resnet.png",
     title: "RESNET Certified",
     description: "Residential Energy Services Network qualified raters.",
   },
@@ -78,7 +75,16 @@ export default function WhyChooseUs() {
                   className="flex items-start gap-4 rounded-2xl bg-white p-6 shadow-md"
                 >
                   <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-cream text-orange">
-                    {cert.icon}
+                    {"image" in cert && cert.image ? (
+                      <Image
+                        src={cert.image}
+                        alt={cert.title}
+                        width={40}
+                        height={40}
+                      />
+                    ) : (
+                      cert.icon
+                    )}
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-charcoal">
